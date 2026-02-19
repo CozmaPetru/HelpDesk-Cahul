@@ -31,7 +31,7 @@ if (!isset($_SESSION['user_id'])) { header("Location: index.php"); exit; }
         .select-options label { display: block; width: 100%; padding: 0; margin: 0; cursor: pointer; }
     </style>
 </head>
-<body class="text-slate-300 min-w-384 flex items-center justify-center p-4">
+<body class="text-slate-300 min-w-384git push origin main flex items-center justify-center p-4">
 
     <div class="glass p-8 rounded-3xl w-full max-w-2xl shadow-2xl border-t-2 border-blue-500/50">
         <div class="mb-8">
