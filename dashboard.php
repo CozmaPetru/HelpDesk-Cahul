@@ -72,7 +72,36 @@ $tickets = $stmt->fetchAll();
                 NEW TICKET</a>
         <?php endif; ?>
     </div>
+    </div>
 
+        <script>
+            // Custom dropdown: open/close and selection handling
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('[data-dropdown-button]');
+                if (btn) {
+                    const menu = btn.nextElementSibling;
+                    // small gap already provided by mt-2; toggle
+                    document.querySelectorAll('[data-dropdown-menu]').forEach(m => { if (m !== menu) m.classList.add('hidden'); });
+                    menu.classList.toggle('hidden');
+                    return;
+                }
+
+                const li = e.target.closest('[data-dropdown-menu] li');
+                if (li) {
+                    const menu = li.closest('[data-dropdown-menu]');
+                    const container = menu.parentElement;
+                    const input = container.querySelector('input[type="hidden"][name="status"]');
+                    const label = container.querySelector('[data-dropdown-button] span');
+                    input.value = li.getAttribute('data-value');
+                    label.textContent = li.textContent.trim();
+                    menu.classList.add('hidden');
+                    return;
+                }
+
+                // Click outside -> close all
+                document.querySelectorAll('[data-dropdown-menu]').forEach(m => m.classList.add('hidden'));
+            });
+        </script>
     <?php if (isset($_GET['deleted'])): ?>
         <div class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm">
             Tichetul a fost șters cu succes!
@@ -114,12 +143,26 @@ $tickets = $stmt->fetchAll();
                         <form action="update_status.php" method="POST" class="flex items-center gap-2">
                             <input type="hidden" name="ticket_id" value="<?= $t['id'] ?>">
 
-                            <select name="status"
-                                class="bg-slate-800 border border-white/10 text-xs rounded-lg px-2 py-1 focus:border-purple-500 outline-none">
-                                <option value="Open" <?= $t['status'] == 'Open' ? 'selected' : '' ?>>Open</option>
-                                <option value="In Progress" <?= $t['status'] == 'In Progress' ? 'selected' : '' ?>>In Progress</option>
-                                <option value="Closed" <?= $t['status'] == 'Closed' ? 'selected' : '' ?>>Closed</option>
-                            </select>
+                            <div class="relative">
+                                <button type="button" data-dropdown-button
+                                    class="flex items-center justify-between bg-slate-800 text-white text-xs rounded-lg pl-2 pr-3 py-1 gap-2 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    aria-expanded="false">
+                                    <span class="truncate"><?= htmlspecialchars(string: $t['status']) ?></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <ul data-dropdown-menu
+                                    class="absolute right-0 mt-2 min-w-full bg-slate-800 rounded-lg shadow-lg z-50 hidden"
+                                    style="border: none; margin-top:0.25rem;">
+                                    <li data-value="Open" class="px-3 py-2 hover:bg-slate-700 cursor-pointer text-sm">Open</li>
+                                    <li data-value="In Progress" class="px-3 py-2 hover:bg-slate-700 cursor-pointer text-sm">In Progress</li>
+                                    <li data-value="Closed" class="px-3 py-2 hover:bg-slate-700 cursor-pointer text-sm">Closed</li>
+                                </ul>
+
+                                <input type="hidden" name="status" value="<?= htmlspecialchars(string: $t['status']) ?>">
+                            </div>
 
                             <button type="submit"
                                 class="text-[10px] bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white px-3 py-1 rounded-md transition-all uppercase font-bold tracking-widest">
