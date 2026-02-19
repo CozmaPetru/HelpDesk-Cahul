@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         body { font-family: 'Helvetica', sans-serif; background: radial-gradient(circle at top left, #1e293b, #0f172a); }
         .font-futuristic { font-family: 'Audiowide', cursive; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        /* Prevent layout from shrinking below Tailwind 'sm' breakpoint (640px) */
+        html, body { min-width: 640px; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
