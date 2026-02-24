@@ -15,9 +15,9 @@ $options = [
 ];
 
 try {
-     $pdo = new PDO(dsn: $dsn, username: $user, password: $pass, options: $options);
+    $pdo = new PDO(dsn: $dsn, username: $user, password: $pass, options: $options);
 } catch (\PDOException $e) {
-     throw new \PDOException(message: $e->getMessage(), code: (int)$e->getCode());
+    throw new \PDOException(message: $e->getMessage(), code: (int)$e->getCode());
 }
 
 // Funcție pentru simulare email
