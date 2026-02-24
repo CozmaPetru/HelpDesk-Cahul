@@ -26,4 +26,3 @@ function logEmail($to, $subject, $message) {
     file_put_contents('email_log.txt', $log, FILE_APPEND);
 }
 ?>
-
