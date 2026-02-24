@@ -1,21 +1,29 @@
 <?php
-require 'db.php';
+require 'db.php'; //
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
 
-$role = $_SESSION['role'];
-$user_id = $_SESSION['user_id'];
+$role = $_SESSION['role']; //
+$user_id = $_SESSION['user_id']; //
 
-// Logica de preluare date
+// Logica existentă pentru tichete
 if ($role == 'admin') {
-    $stmt = $pdo->query("SELECT tickets.*, users.full_name FROM tickets JOIN users ON tickets.user_id = users.id ORDER BY created_at DESC");
+    $stmt = $pdo->query("SELECT tickets.*, users.full_name FROM tickets JOIN users ON tickets.user_id = users.id ORDER BY created_at DESC"); //
+    
+    // --- NOILE STATISTICI PENTRU ADMIN ---
+    $stats = [
+        'today'    => $pdo->query("SELECT COUNT(*) FROM tickets WHERE DATE(created_at) = CURDATE()")->fetchColumn(),
+        'open'     => $pdo->query("SELECT COUNT(*) FROM tickets WHERE status = 'Open'")->fetchColumn(),
+        'critical' => $pdo->query("SELECT COUNT(*) FROM tickets WHERE priority = 'Critical'")->fetchColumn(),
+        'hardware' => $pdo->query("SELECT COUNT(*) FROM tickets WHERE category = 'Hardware'")->fetchColumn()
+    ];
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE user_id = ? ORDER BY created_at DESC");
-    $stmt->execute([$user_id]);
+    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE user_id = ? ORDER BY created_at DESC"); //
+    $stmt->execute([$user_id]); //
 }
-$tickets = $stmt->fetchAll();
+$tickets = $stmt->fetchAll(); //
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +75,17 @@ $tickets = $stmt->fetchAll();
         <h1 class="futuristic-font text-2xl bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             HELPDESK CAHUL
         </h1>
-        <a href="logout.php" class="text-sm bg-red-500/20 hover:bg-red-500/40 text-red-400 px-4 py-2 rounded-lg transition">Logout</a>
+        <div class="flex items-center gap-4">
+            <?php if ($role == 'admin'): ?>
+                <a href="admin_stats.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Statistici
+                </a>
+            <?php endif; ?>
+            <a href="logout.php" class="text-sm bg-red-500/20 hover:bg-red-500/40 text-red-400 px-4 py-2 rounded-lg transition">Logout</a>
+        </div>
     </nav>
 
     <div class="flex justify-between items-center mb-6">
